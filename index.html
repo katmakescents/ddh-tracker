@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DDH Tracker">
+<meta name="theme-color" content="#2e6a68">
+<title>Double Double Hustle — Goal Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:       #3a4146;
+    --sage-lt:   #dadebb;
+    --sage-md:   #9eaf8b;
+    --teal:      #2e6a68;
+    --teal-dk:   #1d4a48;
+    --teal-lt:   #e8f3f2;
+    --blush:     #feb8b6;
+    --blush-lt:  #ffdfe0;
+    --cream:     #faf8f2;
+    --white:     #ffffff;
+    --border:    #e4e0d5;
+    --muted:     #8a9098;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    background: var(--teal);
+    padding: calc(var(--safe-top) + 16px) 20px 18px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(254,184,182,0.15);
+  }
+  .brand-name {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    position: relative;
+  }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    position: relative;
+  }
+  .page-title em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--blush);
+  }
+
+  /* ─── MAIN SCROLL ─── */
+  .main {
+    padding: 20px 18px calc(var(--safe-bot) + 100px);
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  /* ─── GOAL SETUP CARD ─── */
+  .setup-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 16px rgba(46,106,104,0.07);
+  }
+  .setup-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .goal-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .goal-amount {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--teal);
+    line-height: 1;
+  }
+  .edit-btn {
+    background: var(--teal-lt);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--teal);
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .edit-btn:active { background: var(--sage-lt); }
+  .goal-name-text {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ─── PROGRESS RING CARD ─── */
+  .progress-card {
+    background: var(--teal);
+    border-radius: 24px;
+    padding: 28px 24px 24px;
+    margin-bottom: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(46,106,104,0.25);
+  }
+  .progress-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .ring-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 16px;
+  }
+  .ring-wrap svg {
+    transform: rotate(-90deg);
+    width: 180px;
+    height: 180px;
+  }
+  .ring-track {
+    fill: none;
+    stroke: rgba(255,255,255,0.12);
+    stroke-width: 12;
+  }
+  .ring-fill {
+    fill: none;
+    stroke: var(--blush);
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 471;
+    stroke-dashoffset: 471;
+    transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+  }
+  .ring-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .ring-pct {
+    font-family: 'Fraunces', serif;
+    font-size: 40px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+  }
+  .ring-pct-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .progress-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    position: relative;
+  }
+  .ps-box {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: left;
+  }
+  .ps-label { font-size: 10px; color: rgba(255,255,255,0.55); letter-spacing: 0.05em; text-transform: uppercase; }
+  .ps-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 17px;
+    font-weight: 500;
+    color: #fff;
+    margin-top: 2px;
+  }
+  .ps-val.blush { color: var(--blush); }
+
+  /* ─── ADD CONTRIBUTION ─── */
+  .add-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .add-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .add-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .amount-input-wrap {
+    flex: 1;
+    position: relative;
+  }
+  .dollar-sign {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .amount-input {
+    width: 100%;
+    height: 52px;
+    padding: 0 14px 0 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .amount-input:focus { border-color: var(--teal); background: var(--white); }
+  .add-note-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--cream);
+    outline: none;
+    margin-top: 8px;
+    transition: border-color 0.15s;
+  }
+  .add-note-input:focus { border-color: var(--teal); background: var(--white); }
+  .add-note-input::placeholder { color: var(--muted); }
+  .plus-btn {
+    width: 52px;
+    height: 52px;
+    background: var(--teal);
+    border: none;
+    border-radius: 14px;
+    font-size: 26px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(46,106,104,0.3);
+  }
+  .plus-btn:active { transform: scale(0.93); background: var(--teal-dk); }
+
+  /* quick amounts */
+  .quick-amounts {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .qa-btn {
+    background: var(--blush-lt);
+    border: 1px solid var(--blush);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #9a4848;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    transition: all 0.12s;
+  }
+  .qa-btn:active { background: var(--blush); }
+
+  /* ─── LOG ─── */
+  .log-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .log-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .clear-btn {
+    font-size: 11px;
+    color: #c07070;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .log-empty {
+    padding: 24px 18px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .log-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    animation: slideIn 0.3s ease both;
+  }
+  .log-entry:last-child { border-bottom: none; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .log-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--teal-lt);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .log-info { flex: 1; min-width: 0; }
+  .log-note { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .log-date { font-size: 11px; color: var(--muted); opacity: 0.7; }
+  .log-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--teal);
+    flex-shrink: 0;
+  }
+  .log-del {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #ddd;
+    cursor: pointer;
+    padding: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .log-del:active { color: #c07070; }
+
+  /* ─── CONFETTI burst ─── */
+  .confetti-wrap {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .confetti-piece {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    opacity: 0;
+  }
+
+  /* ─── MODALS ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(4px);
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .modal {
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 22px calc(var(--safe-bot) + 24px);
+    width: 100%;
+    max-width: 430px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-drag {
+    width: 36px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+  .modal-input-wrap { position: relative; margin-bottom: 12px; }
+  .modal-dollar {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .modal-input {
+    width: 100%;
+    height: 58px;
+    padding: 0 16px 0 34px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--ink);
+    outline: none;
+    background: var(--cream);
+  }
+  .modal-input:focus { border-color: var(--teal); }
+  .modal-text-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    background: var(--cream);
+    margin-bottom: 12px;
+  }
+  .modal-text-input:focus { border-color: var(--teal); }
+  .modal-save {
+    width: 100%;
+    height: 54px;
+    background: var(--teal);
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+    box-shadow: 0 4px 16px rgba(46,106,104,0.3);
+  }
+  .modal-save:active { background: var(--teal-dk); }
+
+  /* ─── INSTALL BANNER ─── */
+  .install-banner {
+    background: var(--blush-lt);
+    border: 1px solid var(--blush);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #7a3838;
+    line-height: 1.45;
+  }
+  .install-icon { font-size: 22px; flex-shrink: 0; }
+  .install-banner a { color: var(--teal); font-weight: 500; }
+
+  /* ─── CELEBRATE ─── */
+  .celebrate-banner {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--sage-md) 100%);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    text-align: center;
+    display: none;
+  }
+  .celebrate-banner.show { display: block; }
+  .celebrate-title { font-family: 'Fraunces', serif; font-size: 20px; color: #fff; margin-bottom: 4px; }
+  .celebrate-sub { font-size: 13px; color: rgba(255,255,255,0.8); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    padding: 20px 18px calc(var(--safe-bot) + 12px);
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    max-width: 430px;
+    margin: 0 auto;
+  }
+  .footer a { color: var(--teal); text-decoration: none; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="brand-name">Double Double Hustle</div>
+  <div class="page-title">My <em>Goal</em> Tracker ☕</div>
+</div>
+
+<!-- CONFETTI -->
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="goalModal">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-title">Set your goal</div>
+    <div class="modal-sub">What are you saving or hustling toward? Give it a name and a number.</div>
+    <div class="modal-input-wrap">
+      <span class="modal-dollar">$</span>
+      <input type="number" inputmode="decimal" class="modal-input" id="goalAmountInput" placeholder="0.00">
+    </div>
+    <input type="text" class="modal-text-input" id="goalNameInput" placeholder="Goal name (e.g. June bills, emergency fund…)">
+    <button class="modal-save" onclick="saveGoal()">Save goal ✓</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-drag"></div>
+    <div class="modal-title">Add a contribution</div>
+    <div class="modal-sub">Every dollar counts. What are you adding?</div>
+    <div class="modal-input-wrap">
+      <span class="modal-dollar">$</span>
+      <input type="number" inputmode="decimal" class="modal-input" id="addAmountInput" placeholder="0.00">
+    </div>
+    <input type="text" class="modal-text-input" id="addNoteInput" placeholder="Where did this come from? (optional)">
+    <button class="modal-save" onclick="confirmAdd()">Add to total ✓</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- install hint (iOS only shows once) -->
+  <div class="install-banner" id="installBanner" style="display:none;">
+    <span class="install-icon">📲</span>
+    <span>Save this to your Home Screen: tap <strong>Share</strong> → <strong>Add to Home Screen</strong> and your progress stays saved!</span>
+  </div>
+
+  <!-- celebrate banner -->
+  <div class="celebrate-banner" id="celebrateBanner">
+    <div class="celebrate-title">🎉 Goal reached!</div>
+    <div class="celebrate-sub">You did it. Set a new goal and keep the momentum going.</div>
+  </div>
+
+  <!-- Goal card -->
+  <div class="setup-card">
+    <span class="setup-label">Your goal</span>
+    <div class="goal-display">
+      <div>
+        <div class="goal-amount" id="goalAmountDisplay">$0.00</div>
+        <div class="goal-name-text" id="goalNameDisplay">Tap "Edit" to set your goal</div>
+      </div>
+      <button class="edit-btn" onclick="openGoalModal()">Edit goal</button>
+    </div>
+  </div>
+
+  <!-- Progress ring -->
+  <div class="progress-card">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+        <circle class="ring-track" cx="90" cy="90" r="75"/>
+        <circle class="ring-fill" id="ringFill" cx="90" cy="90" r="75"/>
+      </svg>
+      <div class="ring-inner">
+        <div class="ring-pct" id="ringPct">0%</div>
+        <div class="ring-pct-label">complete</div>
+      </div>
+    </div>
+    <div class="progress-stats">
+      <div class="ps-box">
+        <div class="ps-label">Saved so far</div>
+        <div class="ps-val" id="savedVal">$0.00</div>
+      </div>
+      <div class="ps-box">
+        <div class="ps-label">Still needed</div>
+        <div class="ps-val blush" id="remainingVal">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add contribution -->
+  <div class="add-card">
+    <span class="add-label">Log a contribution</span>
+    <div class="add-row">
+      <div class="amount-input-wrap">
+        <span class="dollar-sign">$</span>
+        <input type="number" inputmode="decimal" class="amount-input" id="quickAmountInput" placeholder="0.00">
+      </div>
+      <button class="plus-btn" onclick="quickAdd()">+</button>
+    </div>
+    <input type="text" class="add-note-input" id="quickNoteInput" placeholder="Source (Paycheque, online sales…)">
+    <div class="quick-amounts">
+      <button class="qa-btn" onclick="setQuick(5)">$5</button>
+      <button class="qa-btn" onclick="setQuick(10)">$10</button>
+      <button class="qa-btn" onclick="setQuick(25)">$25</button>
+      <button class="qa-btn" onclick="setQuick(50)">$50</button>
+      <button class="qa-btn" onclick="setQuick(100)">$100</button>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="log-card">
+    <div class="log-header">
+      <span class="log-title">Contribution log</span>
+      <button class="clear-btn" onclick="clearAll()">Reset all</button>
+    </div>
+    <div id="logList"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  A free tool from <a href="Double Double Hustle" target="_blank">katmakescents.wixsite.com/doubledoublehustle</a><br>
+  Your data stays private on your own device. 💚
+</div>
+
+<script>
+  // ── STATE ──────────────────────────────────────────────
+  let state = {
+    goalAmount: 0,
+    goalName: '',
+    entries: []   // [{id, amount, note, date}]
+  };
+
+  const STORAGE_KEY = 'ddh_tracker_v1';
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) state = JSON.parse(raw);
+    } catch(e) {}
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch(e) {}
+  }
+
+  // ── COMPUTED ───────────────────────────────────────────
+  function totalSaved() {
+    return state.entries.reduce((s, e) => s + e.amount, 0);
+  }
+
+  function pct() {
+    if (!state.goalAmount) return 0;
+    return Math.min(100, (totalSaved() / state.goalAmount) * 100);
+  }
+
+  // ── FORMAT ─────────────────────────────────────────────
+  function fmt(n) {
+    return '$' + n.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── RENDER ─────────────────────────────────────────────
+  function render() {
+    const saved = totalSaved();
+    const p = pct();
+    const remaining = Math.max(0, state.goalAmount - saved);
+
+    // goal display
+    document.getElementById('goalAmountDisplay').textContent = state.goalAmount ? fmt(state.goalAmount) : '$—';
+    document.getElementById('goalNameDisplay').textContent = state.goalName || 'Tap "Edit" to set your goal';
+
+    // ring
+    const circumference = 2 * Math.PI * 75; // ~471
+    const offset = circumference - (p / 100) * circumference;
+    const ring = document.getElementById('ringFill');
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = offset;
+    document.getElementById('ringPct').textContent = Math.round(p) + '%';
+
+    // stats
+    document.getElementById('savedVal').textContent = fmt(saved);
+    document.getElementById('remainingVal').textContent = state.goalAmount ? fmt(remaining) : '—';
+
+    // celebrate
+    const banner = document.getElementById('celebrateBanner');
+    if (state.goalAmount && saved >= state.goalAmount) {
+      banner.classList.add('show');
+    } else {
+      banner.classList.remove('show');
+    }
+
+    // log
+    const list = document.getElementById('logList');
+    if (!state.entries.length) {
+      list.innerHTML = '<div class="log-empty">No contributions yet — add your first one above ☕</div>';
+    } else {
+      const emojis = ['💵','☕','✨','💪','🌿','💰','⭐','🎯'];
+      list.innerHTML = [...state.entries].reverse().map(e => `
+        <div class="log-entry">
+          <div class="log-dot">${emojis[Math.abs(e.id) % emojis.length]}</div>
+          <div class="log-info">
+            <div class="log-note">${e.note || 'Contribution'}</div>
+            <div class="log-date">${fmtDate(e.date)}</div>
+          </div>
+          <div class="log-amount">+${fmt(e.amount)}</div>
+          <button class="log-del" onclick="deleteEntry(${e.id})">✕</button>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ── GOAL MODAL ─────────────────────────────────────────
+  function openGoalModal() {
+    document.getElementById('goalAmountInput').value = state.goalAmount || '';
+    document.getElementById('goalNameInput').value = state.goalName || '';
+    document.getElementById('goalModal').classList.add('open');
+    setTimeout(() => document.getElementById('goalAmountInput').focus(), 350);
+  }
+
+  function saveGoal() {
+    const amt = parseFloat(document.getElementById('goalAmountInput').value) || 0;
+    const name = document.getElementById('goalNameInput').value.trim();
+    state.goalAmount = amt;
+    state.goalName = name;
+    save();
+    render();
+    document.getElementById('goalModal').classList.remove('open');
+  }
+
+  // ── ADD CONTRIBUTION ───────────────────────────────────
+  function quickAdd() {
+    const amt = parseFloat(document.getElementById('quickAmountInput').value) || 0;
+    const note = document.getElementById('quickNoteInput').value.trim();
+    if (!amt || amt <= 0) {
+      document.getElementById('quickAmountInput').focus();
+      return;
+    }
+    addEntry(amt, note);
+    document.getElementById('quickAmountInput').value = '';
+    document.getElementById('quickNoteInput').value = '';
+  }
+
+  function setQuick(n) {
+    document.getElementById('quickAmountInput').value = n;
+    document.getElementById('quickAmountInput').focus();
+  }
+
+  function addEntry(amount, note) {
+    const wasBelowGoal = totalSaved() < state.goalAmount;
+    state.entries.push({
+      id: Date.now(),
+      amount,
+      note,
+      date: new Date().toISOString()
+    });
+    save();
+    render();
+    // confetti if goal just hit
+    if (wasBelowGoal && state.goalAmount && totalSaved() >= state.goalAmount) {
+      launchConfetti();
+    } else {
+      // small pulse on ring
+      const ring = document.getElementById('ringFill');
+      ring.style.transition = 'stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1)';
+    }
+  }
+
+  function deleteEntry(id) {
+    state.entries = state.entries.filter(e => e.id !== id);
+    save();
+    render();
+  }
+
+  function clearAll() {
+    if (!confirm('Reset all contributions? Your goal will stay.')) return;
+    state.entries = [];
+    save();
+    render();
+  }
+
+  // ── CONFETTI ──────────────────────────────────────────
+  function launchConfetti() {
+    const wrap = document.getElementById('confettiWrap');
+    const colors = ['#feb8b6','#9eaf8b','#2e6a68','#ffdfe0','#dadebb','#fff'];
+    wrap.innerHTML = '';
+    for (let i = 0; i < 60; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 40}%;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        width: ${4 + Math.random() * 8}px;
+        height: ${4 + Math.random() * 8}px;
+        border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        animation: confettiFall ${1.5 + Math.random()}s ease forwards ${Math.random() * 0.5}s;
+      `;
+      wrap.appendChild(el);
+    }
+    // inject keyframes once
+    if (!document.getElementById('confettiKF')) {
+      const s = document.createElement('style');
+      s.id = 'confettiKF';
+      s.textContent = `@keyframes confettiFall {
+        0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+        100% { opacity: 0; transform: translateY(200px) rotate(${Math.random() > 0.5 ? '' : '-'}720deg); }
+      }`;
+      document.head.appendChild(s);
+    }
+    setTimeout(() => { wrap.innerHTML = ''; }, 3000);
+  }
+
+  // ── CLOSE MODALS on backdrop click ────────────────────
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  // ── ENTER key on modal inputs ─────────────────────────
+  document.getElementById('goalAmountInput').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('goalNameInput').focus(); });
+  document.getElementById('goalNameInput').addEventListener('keydown', e => { if(e.key==='Enter') saveGoal(); });
+  document.getElementById('quickAmountInput').addEventListener('keydown', e => { if(e.key==='Enter') quickAdd(); });
+
+  // ── iOS INSTALL HINT ──────────────────────────────────
+  function isIOS() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  }
+  function isStandalone() {
+    return window.navigator.standalone === true;
+  }
+
+  // ── INIT ──────────────────────────────────────────────
+  load();
+  render();
+
+  // Show install banner for iOS users not in standalone mode
+  if (isIOS() && !isStandalone() && !localStorage.getItem('ddh_install_dismissed')) {
+    document.getElementById('installBanner').style.display = 'flex';
+  }
+
+  // If no goal set yet, open goal modal after a short delay
+  if (!state.goalAmount) {
+    setTimeout(openGoalModal, 700);
+  }
+</script>
+</body>
+</html>
