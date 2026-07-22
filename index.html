@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>June Goal — Double Double Hustle</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:      #3a4146;
+    --sage-lt:  #dadebb;
+    --sage-md:  #9eaf8b;
+    --teal:     #2e6a68;
+    --teal-dk:  #1d4a48;
+    --teal-lt:  #e8f3f2;
+    --blush:    #feb8b6;
+    --blush-lt: #ffdfe0;
+    --cream:    #faf8f2;
+    --border:   #e4e0d5;
+    --muted:    #8a9098;
+    --white:    #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  /* ── WIDGET SHELL ── */
+  .widget {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 4px 24px rgba(46,106,104,0.10);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── HEADER BAND ── */
+  .w-head {
+    background: var(--teal);
+    padding: 18px 20px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .w-head::before {
+    content:'';
+    position:absolute; right:-30px; top:-30px;
+    width:110px; height:110px; border-radius:50%;
+    background:rgba(255,255,255,0.06);
+  }
+  .w-head::after {
+    content:'';
+    position:absolute; left:-15px; bottom:-25px;
+    width:80px; height:80px; border-radius:50%;
+    background:rgba(254,184,182,0.12);
+  }
+  .w-eyebrow {
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6); margin-bottom: 3px; position: relative;
+  }
+  .w-title {
+    font-family: 'Fraunces', serif;
+    font-size: 19px; font-weight: 600; color: #fff;
+    line-height: 1.2; position: relative;
+  }
+  .w-title em { font-style: italic; font-weight: 400; color: var(--blush); }
+  .w-last-updated {
+    font-size: 10px; color: rgba(255,255,255,0.45);
+    margin-top: 4px; position: relative;
+  }
+
+  /* ── PROGRESS BAR SECTION ── */
+  .w-body { padding: 18px 20px 0; }
+
+  .progress-row {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 6px;
+  }
+  .pr-label { font-size: 11px; color: var(--muted); }
+  .pr-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px; font-weight: 500; color: var(--teal);
+  }
+
+  .track {
+    height: 16px;
+    background: var(--sage-lt);
+    border-radius: 8px;
+    overflow: visible;
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--teal) 0%, var(--sage-md) 100%);
+    position: relative;
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    min-width: 16px;
+  }
+  .fill-cup {
+    position: absolute;
+    right: -10px; top: -6px;
+    font-size: 26px;
+    line-height: 1;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.15));
+  }
+
+  /* ── STATS GRID ── */
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 10px 9px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; font-weight: 500;
+    color: var(--ink); display: block; margin-bottom: 2px;
+  }
+  .stat-num.teal { color: var(--teal); }
+  .stat-num.blush { color: #b06060; }
+  .stat-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ── WEEKLY BREAKDOWN ── */
+  .weeks-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+  }
+  .weeks { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .week-chip {
+    flex: 1; min-width: 80px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 8px 7px;
+    text-align: center;
+  }
+  .week-chip.done { background: var(--teal-lt); border-color: rgba(46,106,104,0.25); }
+  .week-chip.current { background: var(--blush-lt); border-color: var(--blush); }
+  .wc-label { font-size: 9px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+  .wc-amt {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500; color: var(--ink);
+    display: block; margin-top: 2px;
+  }
+  .week-chip.done .wc-amt { color: var(--teal); }
+  .week-chip.current .wc-amt { color: #9a4848; }
+
+  /* ── STREAM BREAKDOWN ── */
+  .streams-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+  }
+  .stream-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .stream-row:last-child { border-bottom: none; }
+  .stream-bar-wrap { flex: 1; height: 6px; background: var(--sage-lt); border-radius: 3px; overflow: hidden; }
+  .stream-bar { height: 100%; border-radius: 3px; background: var(--teal); }
+  .stream-name { font-size: 12px; color: var(--ink); min-width: 110px; }
+  .stream-amt { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--teal); min-width: 52px; text-align: right; }
+
+  /* ── FOOTER BAND ── */
+  .w-foot {
+    background: var(--cream);
+    border-top: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .w-foot-text { font-size: 11px; color: var(--muted); line-height: 1.45; }
+  .w-foot-text strong { color: var(--ink); font-weight: 500; }
+  .tracker-link {
+    background: var(--teal);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .tracker-link:hover { background: var(--teal-dk); }
+
+  /* ── CELEBRATE ── */
+  .celebrate {
+    margin: 0 20px 16px;
+    background: linear-gradient(135deg, var(--teal), var(--sage-md));
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: center;
+    display: none;
+  }
+  .celebrate.show { display: block; }
+  .cel-title { font-family: 'Fraunces', serif; font-size: 18px; color: #fff; margin-bottom: 3px; }
+  .cel-sub { font-size: 12px; color: rgba(255,255,255,0.8); }
+
+  /* ── ADMIN PANEL (hidden by default) ── */
+  .admin-toggle {
+    display: block;
+    text-align: center;
+    font-size: 10px;
+    color: var(--border);
+    cursor: pointer;
+    padding: 6px;
+    user-select: none;
+    letter-spacing: 0.05em;
+  }
+  .admin-toggle:hover { color: var(--muted); }
+
+  .admin-panel {
+    display: none;
+    background: var(--ink);
+    border-radius: 0 0 20px 20px;
+    padding: 20px;
+  }
+  .admin-panel.open { display: block; }
+  .admin-title {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.5); margin-bottom: 14px;
+  }
+  .admin-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .admin-input {
+    flex: 1; min-width: 120px;
+    height: 38px; padding: 0 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    outline: none;
+  }
+  .admin-input::placeholder { color: rgba(255,255,255,0.3); }
+  .admin-input:focus { border-color: var(--blush); }
+  .admin-label-sm { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 4px; display: block; }
+  .admin-btn {
+    height: 38px; padding: 0 16px;
+    background: var(--teal);
+    border: none; border-radius: 8px;
+    color: #fff; font-size: 12px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+  }
+  .admin-btn:hover { background: var(--teal-dk); }
+  .admin-divider { border: none; border-top: 1px solid rgba(255,255,255,0.08); margin: 12px 0; }
+  .admin-week-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .admin-stream-list { display: flex; flex-direction: column; gap: 6px; }
+  .admin-stream-row { display: flex; gap: 6px; align-items: center; }
+  .admin-stream-name {
+    flex: 1;
+    height: 34px; padding: 0 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 7px; color: rgba(255,255,255,0.8);
+    font-size: 12px; font-family: 'DM Sans', sans-serif; outline: none;
+  }
+  .admin-stream-amt {
+    width: 80px;
+    height: 34px; padding: 0 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 7px; color: #fff;
+    font-size: 12px; font-family: 'DM Mono', monospace; outline: none;
+    text-align: right;
+  }
+  .admin-save-all {
+    width: 100%; height: 42px;
+    background: var(--blush);
+    border: none; border-radius: 10px;
+    color: #fff; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    margin-top: 10px;
+  }
+  .admin-save-all:hover { background: #e8a0a0; }
+  .admin-note { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 8px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="widget">
+
+  <!-- HEADER -->
+  <div class="w-head">
+    <div class="w-eyebrow">Double Double Hustle · Live Challenge</div>
+    <div class="w-title">June 2026 <em>Hustle Goal</em></div>
+    <div class="w-last-updated" id="lastUpdated">Loading…</div>
+  </div>
+
+  <div class="w-body">
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-row">
+      <span class="pr-label" id="prLeft">$0</span>
+      <span class="pr-pct" id="prPct">0%</span>
+      <span class="pr-label" id="prRight">Goal: $3,076.73</span>
+    </div>
+    <div class="track">
+      <div class="fill" id="progressFill" style="width:0%">
+        <span class="fill-cup">☕</span>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-num teal" id="statEarned">$0</span>
+        <span class="stat-lbl">Earned</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num blush" id="statRemaining">—</span>
+        <span class="stat-lbl">To Go</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num" id="statDaysLeft">—</span>
+        <span class="stat-lbl">Days left</span>
+      </div>
+    </div>
+
+    <!-- WEEKLY CHIPS -->
+    <div class="weeks-label">Weekly progress</div>
+    <div class="weeks" id="weeksRow"></div>
+
+    <!-- STREAM BREAKDOWN -->
+    <div class="streams-label">Income by source</div>
+    <div id="streamsBlock"></div>
+
+  </div><!-- /w-body -->
+
+  <!-- CELEBRATE -->
+  <div class="celebrate" id="celebrateBanner">
+    <div class="cel-title">🎉 Goal reached!</div>
+    <div class="cel-sub">June hustle: complete. Onto the next one.</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="w-foot">
+    <div class="w-foot-text">
+      <strong>Want to track your own goal?</strong><br>
+      Free personal tracker — saves to your phone.<br>
+      ← find the link under the post
+    </div>
+    
+  </div>
+
+  <!-- SECRET ADMIN TOGGLE (click 5× to reveal) -->
+  <span class="admin-toggle" id="adminToggle" onclick="adminClick()">· · ·</span>
+
+  <!-- ADMIN PANEL -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-title">⚙ Update your progress (only you see this)</div>
+
+    <div>
+      <span class="admin-label-sm">Total earned so far ($)</span>
+      <div class="admin-row">
+        <input type="number" inputmode="decimal" class="admin-input" id="adminEarned" placeholder="897.16">
+        <input type="text" class="admin-input" id="adminUpdatedText" placeholder="Updated June 4 · Week 1">
+        <button class="admin-btn" onclick="updateMain()">Save</button>
+      </div>
+    </div>
+
+    <hr class="admin-divider">
+    <span class="admin-label-sm">Weekly amounts ($) — fill in each week as it completes</span>
+    <div class="admin-week-grid" id="adminWeekGrid"></div>
+
+    <hr class="admin-divider">
+    <span class="admin-label-sm">Income by source — name + amount</span>
+    <div class="admin-stream-list" id="adminStreamList"></div>
+
+    <button class="admin-save-all" onclick="saveAll()">💾 Save all changes</button>
+    <div class="admin-note">All data saves in your browser. To update the live widget for visitors, paste the exported JSON into your Wix embed (see setup guide).</div>
+  </div>
+
+</div><!-- /widget -->
+
+<script>
+// ── DEFAULT DATA (pre-seeded with Kat's June start) ──────────────
+const DEFAULTS = {
+  goal: 3076.73,
+  earned: 975.36,
+  updatedText: 'Updated June 30 · Week 5 of 5',
+  weeks: [
+    { label: 'Week 1', amount: 957.24, status: 'current' },
+    { label: 'Week 2', amount: 1963.86,      status: 'upcoming' },
+    { label: 'Week 3', amount: 255.86,      status: 'upcoming' },
+    { label: 'Week 4', amount: 298.88,      status: 'upcoming' },
+    { label: 'Week 5', amount: 167,      status: 'upcoming' },
+  ],
+  streams: [
+    { name: 'Mystery Shopping',       amount: 310.14 },
+    { name: 'Design Royalties',     amount: 2107.60 },
+    { name: 'Surveys & Focus Groups', amount: 305.56  },
+    { name: 'Plasma Donation',  amount: 185.00 },
+    { name: 'Product Sales',       amount: 70.33  },
+    { name: 'Consignment',   amount: 608.11  },
+    { name: 'AI Training',   amount: 56.10  },
+  ],
+  trackerLink: '#tracker'
+};
+
+const KEY = 'ddh_widget_v1';
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : DEFAULTS;
+  } catch(e) { return DEFAULTS; }
+}
+
+function saveData(d) {
+  try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e) {}
+}
+
+function fmt(n) {
+  return '$' + n.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function daysLeftInJune() {
+  const now = new Date();
+  const endOfJune = new Date(now.getFullYear(), 5, 30, 23, 59, 59);
+  const diff = endOfJune - now;
+  if (diff <= 0) return 0;
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
+function render(d) {
+  const pct = Math.min(100, (d.earned / d.goal) * 100);
+  const remaining = Math.max(0, d.goal - d.earned);
+
+  // header
+  document.getElementById('lastUpdated').textContent = d.updatedText || '';
+
+  // bar
+  document.getElementById('prLeft').textContent = fmt(d.earned);
+  document.getElementById('prRight').textContent = 'Goal: ' + fmt(d.goal);
+  document.getElementById('prPct').textContent = Math.round(pct) + '%';
+  setTimeout(() => {
+    document.getElementById('progressFill').style.width = Math.max(4, pct) + '%';
+  }, 120);
+
+  // stats
+  document.getElementById('statEarned').textContent = fmt(d.earned);
+  document.getElementById('statRemaining').textContent = d.earned >= d.goal ? '🎉' : fmt(remaining);
+  document.getElementById('statDaysLeft').textContent = daysLeftInJune();
+
+  // celebrate
+  document.getElementById('celebrateBanner').classList.toggle('show', d.earned >= d.goal);
+
+  // weeks
+  const weeksRow = document.getElementById('weeksRow');
+  weeksRow.innerHTML = d.weeks.map(w => `
+    <div class="week-chip ${w.status}">
+      <div class="wc-label">${w.label}</div>
+      <span class="wc-amt">${w.amount > 0 ? fmt(w.amount) : (w.status === 'upcoming' ? '—' : fmt(0))}</span>
+    </div>
+  `).join('');
+
+  // streams
+  const maxAmt = Math.max(...d.streams.map(s => s.amount), 1);
+  document.getElementById('streamsBlock').innerHTML = d.streams
+    .filter(s => s.amount > 0)
+    .sort((a,b) => b.amount - a.amount)
+    .map(s => `
+      <div class="stream-row">
+        <span class="stream-name">${s.name}</span>
+        <div class="stream-bar-wrap">
+          <div class="stream-bar" style="width:${(s.amount/maxAmt)*100}%"></div>
+        </div>
+        <span class="stream-amt">${fmt(s.amount)}</span>
+      </div>
+    `).join('');
+
+  // tracker link
+  document.getElementById('trackerAppLink').href = d.trackerLink || '#tracker';
+}
+
+// ── ADMIN PANEL ─────────────────────────────────────────────────
+let adminClicks = 0;
+let adminTimer;
+function adminClick() {
+  adminClicks++;
+  clearTimeout(adminTimer);
+  adminTimer = setTimeout(() => adminClicks = 0, 2000);
+  if (adminClicks >= 5) {
+    adminClicks = 0;
+    document.getElementById('adminPanel').classList.toggle('open');
+    if (document.getElementById('adminPanel').classList.contains('open')) {
+      populateAdmin();
+    }
+  }
+}
+
+function populateAdmin() {
+  const d = load();
+  document.getElementById('adminEarned').value = d.earned;
+  document.getElementById('adminUpdatedText').value = d.updatedText;
+
+  // weeks
+  const wg = document.getElementById('adminWeekGrid');
+  wg.innerHTML = d.weeks.map((w,i) => `
+    <div>
+      <span class="admin-label-sm">${w.label} ($)</span>
+      <input type="number" class="admin-input" id="aw${i}" placeholder="0.00" value="${w.amount || ''}">
+    </div>
+  `).join('');
+
+  // streams
+  const sl = document.getElementById('adminStreamList');
+  sl.innerHTML = d.streams.map((s,i) => `
+    <div class="admin-stream-row">
+      <input type="text" class="admin-stream-name" id="sn${i}" value="${s.name}" placeholder="Source name">
+      <input type="number" class="admin-stream-amt" id="sa${i}" value="${s.amount}" placeholder="0.00">
+    </div>
+  `).join('');
+}
+
+function updateMain() {
+  const d = load();
+  d.earned = parseFloat(document.getElementById('adminEarned').value) || d.earned;
+  d.updatedText = document.getElementById('adminUpdatedText').value || d.updatedText;
+  saveData(d);
+  render(d);
+}
+
+function saveAll() {
+  const d = load();
+  d.earned = parseFloat(document.getElementById('adminEarned').value) || d.earned;
+  d.updatedText = document.getElementById('adminUpdatedText').value || d.updatedText;
+
+  d.weeks = d.weeks.map((w,i) => {
+    const val = parseFloat(document.getElementById('aw'+i)?.value) || 0;
+    return {
+      ...w,
+      amount: val,
+      status: val > 0 ? 'done' : (i === getCurrentWeekIndex() ? 'current' : 'upcoming')
+    };
+  });
+
+  d.streams = d.streams.map((s,i) => ({
+    name: document.getElementById('sn'+i)?.value || s.name,
+    amount: parseFloat(document.getElementById('sa'+i)?.value) || 0
+  }));
+
+  saveData(d);
+  render(d);
+  document.getElementById('adminPanel').classList.remove('open');
+}
+
+function getCurrentWeekIndex() {
+  const day = new Date().getDate();
+  if (day <= 7) return 0;
+  if (day <= 14) return 1;
+  if (day <= 21) return 2;
+  return 3;
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+const data = load();
+render(data);
+</script>
+
+</body>
+</html>
